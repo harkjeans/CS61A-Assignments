@@ -368,9 +368,6 @@ def final_strategy(score, opponent_score):
     else:
         return 2
     
-    if score - opponent_score > 20:
-        return 4
-    return 6
     # END PROBLEM 12
 
 
