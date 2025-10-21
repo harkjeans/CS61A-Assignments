@@ -83,7 +83,14 @@ def interleaved_sum(n, odd_func, even_func):
     True
     """
     "*** YOUR CODE HERE ***"
-    
+    def helper(k, is_odd):
+        if k > n:
+            return 0
+        if is_odd:
+            return odd_func(k) + helper(k + 1, False)
+        else:
+            return even_func(k) + helper(k + 1, True)
+    return helper(1, True)
 
 
 def next_smaller_dollar(bill):
@@ -120,6 +127,18 @@ def count_dollars(total):
     True
     """
     "*** YOUR CODE HERE ***"
+    def count_ways(amount, max_bill):
+        if amount == 0:
+            return 1
+        if amount < 0 or max_bill is None:
+            return 0
+        
+        use_current = count_ways(amount - max_bill, max_bill)
+        use_smaller = count_ways(amount, next_smaller_dollar(max_bill))
+        
+        return use_current + use_smaller    
+    
+    return count_ways(total, 100)
 
 
 def next_larger_dollar(bill):
@@ -156,6 +175,18 @@ def count_dollars_upward(total):
     True
     """
     "*** YOUR CODE HERE ***"
+    def count_ways(amount, min_dollar):
+        if amount == 0:
+            return 1
+        if amount < 0 or min_dollar is None:
+            return 0
+        
+        use_current = count_ways(amount - min_dollar, min_dollar)
+        use_lager = count_ways(amount, next_larger_dollar(min_dollar))
+        
+        return use_current + use_lager
+    
+    return count_ways(total, 1)
 
 
 def print_move(origin, destination):
@@ -191,6 +222,13 @@ def move_stack(n, start, end):
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
     "*** YOUR CODE HERE ***"
+    if n == 1:
+        print_move(start, end)
+    else:
+        other = 6 - start - end
+        move_stack(n - 1, start, other)
+        print_move(start, end)
+        move_stack(n - 1, other, end)
 
 
 from operator import sub, mul
@@ -206,5 +244,5 @@ def make_anonymous_factorial():
     ...     ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    return (lambda f: lambda n: f(f, n))(lambda f, n: 1 if n == 0 else mul(n, f(f, sub(n, 1))))
 
