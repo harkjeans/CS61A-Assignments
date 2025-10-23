@@ -369,6 +369,18 @@ def report_progress(typed, source, user_id, upload):
     "*** YOUR CODE HERE ***"
     corrcet_count = 0
     for i in range(len(typed)):
+        if typed[i] == source[i]:
+            corrcet_count += 1
+        elif i >= len(source):
+            break
+        else:
+            break
+        
+    progress = corrcet_count / len(source)
+    
+    upload({'id': user_id, 'progress': progress})
+    
+    return progress
         
     # END PROBLEM 8
 
