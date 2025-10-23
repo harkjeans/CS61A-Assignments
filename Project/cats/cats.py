@@ -12,6 +12,7 @@ from ucb import main, interact, trace
 from datetime import datetime
 import random
 
+FINAL_DIFF_LIMIT = 10
 
 ###########
 # Phase 1 #
@@ -199,6 +200,15 @@ def autocorrect(typed_word, word_list, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    if typed_word in word_list:
+        return typed_word
+    
+    best_word = min(word_list, key=lambda word: diff_function(typed_word, word, limit))
+    min_diff = diff_function(typed_word, best_word, limit)
+    
+    if min_diff > limit:
+        return typed_word
+    return best_word
     # END PROBLEM 5
 
 
@@ -225,7 +235,22 @@ def furry_fixes(typed, source, limit):
     5
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    if limit < 0:
+        return 1
+    
+    if len(typed) == 0 and len(source) == 0:
+        return 0
+    
+    if len(typed) == 0:
+        return len(source)
+    elif len(source) == 0:
+        return len(typed)
+    
+    if typed[0] == source[0]:
+        return furry_fixes(typed[1:], source[1:], limit)
+    else:
+        return 1 + furry_fixes(typed[1:], source[1:], limit - 1)
+    
     # END PROBLEM 6
 
 
@@ -246,23 +271,25 @@ def minimum_mewtations(typed, source, limit):
     >>> minimum_mewtations("ckiteus", "kittens", big_limit) # ckiteus -> kiteus -> kitteus -> kittens
     3
     """
-    assert False, 'Remove this line'
-    if ___________: # Base cases should go here, you may add more base cases as needed.
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
-    # Recursive cases should go below here
-    if ___________: # Feel free to remove or add additional cases
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+    # BEGIN PROBLEM 7
+    # recursive case
+    if limit < 0:
+        return 1
+    # base case1
+    if len(typed) == 0:
+        return len(source) 
+    # base case2
+    if len(source) == 0:
+        return len(typed)
+    
+    if typed[0] == source[0]:
+        return minimum_mewtations(typed[1:], source[1:], limit)
     else:
-        add = ... # Fill in these lines
-        remove = ...
-        substitute = ...
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+        add = 1 + minimum_mewtations(typed, source[1:], limit - 1)
+        remove = 1 + minimum_mewtations(typed[1:], source, limit - 1)
+        substitute = 1 + minimum_mewtations(typed[1:], source[1:], limit - 1)
+        return min(add, remove, substitute)
+    # END PROBLEM 7
 
 
 # Ignore the line below
@@ -272,10 +299,42 @@ minimum_mewtations = count(minimum_mewtations)
 def final_diff(typed, source, limit):
     """A diff function that takes in a string TYPED, a string SOURCE, and a number LIMIT.
     If you implement this function, it will be used."""
-    assert False, "Remove this line to use your final_diff function."
-
-
-FINAL_DIFF_LIMIT = 6  # REPLACE THIS WITH YOUR LIMIT
+    
+    # 使用动态规划表
+    m, n = len(typed), len(source)
+    dp = [[float('inf')] * (n + 1) for _ in range(m + 1)]
+    
+    # 初始化
+    for i in range(m + 1):
+        dp[i][0] = i  # 删除所有typed字符
+    for j in range(n + 1):
+        dp[0][j] = j  # 插入所有source字符
+    
+    # 填充DP表
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if typed[i-1] == source[j-1]:
+                dp[i][j] = dp[i-1][j-1]
+            else:
+                # 检查字母交换
+                if (i >= 2 and j >= 2 and 
+                    typed[i-1] == source[j-2] and typed[i-2] == source[j-1]):
+                    dp[i][j] = min(dp[i][j], 1 + dp[i-2][j-2])
+                
+                # 检查重复字母
+                if j >= 2 and typed[i-1] == source[j-2] == source[j-1]:
+                    dp[i][j] = min(dp[i][j], 1 + dp[i][j-1])  # 插入重复字母
+                
+                if i >= 2 and source[j-1] == typed[i-2] == typed[i-1]:
+                    dp[i][j] = min(dp[i][j], 1 + dp[i-1][j])  # 删除重复字母
+                
+                # 标准操作
+                dp[i][j] = min(dp[i][j], 
+                              1 + dp[i][j-1],    # 插入
+                              1 + dp[i-1][j],    # 删除  
+                              1 + dp[i-1][j-1])  # 替换
+    
+    return dp[m][n] if dp[m][n] <= limit else float('inf')
 
 
 ###########
@@ -308,6 +367,9 @@ def report_progress(typed, source, user_id, upload):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    corrcet_count = 0
+    for i in range(len(typed)):
+        
     # END PROBLEM 8
 
 
