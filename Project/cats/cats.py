@@ -405,7 +405,20 @@ def time_per_word(words, timestamps_per_player):
     """
     tpp = timestamps_per_player  # A shorter name (for convenience)
     # BEGIN PROBLEM 9
-    times = []  # You may remove this line
+    # times = []  # You may remove this line
+    
+    # for player_timestamps in tpp:
+    #     player_times = []
+    #     for i in range(len(player_timestamps) - 1):
+    #         time_diff = player_timestamps[i + 1] - player_timestamps[i]
+    #         player_times.append(time_diff)
+    #     times.append(player_times)
+    
+    times = [
+        [tpp[i][j+1] - tpp[i][j] for j in range(len(words))] 
+        for i in range(len(tpp))
+    ]
+        
     # END PROBLEM 9
     return {'words': words, 'times': times}
 
@@ -433,6 +446,13 @@ def fastest_words(words_and_times):
     word_indices = range(len(words))    # contains an *index* for each word
     # BEGIN PROBLEM 10
     "*** YOUR CODE HERE ***"
+    fastest = [[] for _ in player_indices]
+    
+    for word_index in word_indices:
+        fastest_player = min(player_indices, key=lambda p: get_time(times, p, word_index))
+        fastest[fastest_player].append(words[word_index])
+    
+    return fastest
     # END PROBLEM 10
 
 
@@ -458,7 +478,7 @@ def get_time(times, player_num, word_index):
     return times[player_num][word_index]
 
 
-enable_multiplayer = False  # Change to True when you're ready to race.
+enable_multiplayer = True  # Change to True when you're ready to race.
 
 ##########################
 # Command Line Interface #
