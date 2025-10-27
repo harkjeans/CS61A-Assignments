@@ -13,6 +13,14 @@ def shuffle(s):
     """
     assert len(s) % 2 == 0, 'len(seq) must be even'
     "*** YOUR CODE HERE ***"
+    half = len(s) // 2
+    result = []
+    
+    for i in range(half):
+        result.append(s[i])
+        result.append(s[half + i])
+        
+    return result
 
 
 def deep_map(f, s):
@@ -38,6 +46,11 @@ def deep_map(f, s):
     True
     """
     "*** YOUR CODE HERE ***"
+    for i in range(len(s)):
+        if type(s[i]) == list:
+            deep_map(f, s[i])
+        else:
+            s[i] = f(s[i])       
 
 
 HW_SOURCE_FILE=__file__
@@ -47,11 +60,13 @@ def planet(mass):
     """Construct a planet of some mass."""
     assert mass > 0
     "*** YOUR CODE HERE ***"
+    return ['planet', mass]
 
 def mass(p):
     """Select the mass of a planet."""
     assert is_planet(p), 'must call mass on a planet'
     "*** YOUR CODE HERE ***"
+    return p[1]
 
 def is_planet(p):
     """Whether p is a planet."""
@@ -104,7 +119,18 @@ def balanced(m):
     True
     """
     "*** YOUR CODE HERE ***"
-
+    if is_planet(m):
+        return True
+    
+    left_arm = left(m)
+    right_arm = right(m)
+    
+    left_torque = length(left_arm) * total_mass(end(left_arm))
+    right_torque = length(right_arm) * total_mass(end(right_arm))
+    
+    return (left_torque == right_torque and 
+            balanced(end(left_arm)) and 
+            balanced(end(right_arm)))
 
 def berry_finder(t):
     """Returns True if t contains a node with the value 'berry' and 
@@ -124,6 +150,14 @@ def berry_finder(t):
     True
     """
     "*** YOUR CODE HERE ***"
+    if label(t) == 'berry':
+        return True
+    
+    for b in branches(t):
+        if berry_finder(b):
+            return True
+    
+    return False
 
 
 HW_SOURCE_FILE=__file__
@@ -139,6 +173,12 @@ def max_path_sum(t):
     17
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return label(t)
+    
+    max_child_sum = max(max_path_sum(b) for b in branches(t))
+    
+    return label(t) + max_child_sum
 
 
 def mobile(left, right):
