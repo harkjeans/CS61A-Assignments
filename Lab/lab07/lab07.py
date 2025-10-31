@@ -40,7 +40,14 @@ class Account:
         """Return the number of years until balance would grow to amount."""
         assert self.balance > 0 and amount > 0 and self.interest > 0
         "*** YOUR CODE HERE ***"
-
+        year = 0
+        current_balance = self.balance
+        
+        while current_balance < amount:
+            year += 1
+            current_balance *= (1 + self.interest)
+        
+        return year
 
 class FreeChecking(Account):
     """A bank account that charges for withdrawals, but the first two are free!
@@ -70,7 +77,18 @@ class FreeChecking(Account):
     free_withdrawals = 2
 
     "*** YOUR CODE HERE ***"
-
+    def withdraw(self, amount):
+        
+        if self.free_withdrawals > 0:
+            actual_amount = amount
+            self.free_withdrawals -= 1
+        else:
+            actual_amount = amount + self.withdraw_fee
+            
+        if actual_amount > self.balance:
+            return 'Insufficient funds'
+        self.balance -= actual_amount
+        return self.balance
 
 def without(s, i):
     """Return a new linked list like s but without the element at index i.
@@ -86,6 +104,12 @@ def without(s, i):
     True
     """
     "*** YOUR CODE HERE ***"
+    assert i >= 0
+    if s is Link.empty:
+        return Link.empty   
+    if i == 0:
+        return s.rest
+    return Link(s.first, without(s.rest, i - 1)) 
 
 
 def duplicate_link(s, val):
@@ -105,6 +129,15 @@ def duplicate_link(s, val):
     Link(1, Link(2, Link(2, Link(2, Link(2, Link(3))))))
     """
     "*** YOUR CODE HERE ***"
+    if s is Link.empty:
+        return
+    
+    if s.first == val:
+        original_rest = s.rest
+        s.rest = Link(val, original_rest)
+        duplicate_link(original_rest, val)
+    else:
+        duplicate_link(s.rest, val)
 
 
 class Link:
